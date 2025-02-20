@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CO2 Emissions Visualization</title>
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <style>
+    body {
+      background-color: #1c1c1c;
+      color: white;
+      font-family: 'Lato', sans-serif;
+      text-align: center;
+      margin: auto;
+    }
+    h2 {
+      font-size: 80px;
+      margin: 20px 0;
+      font-weight: bold;
+      color: #4caf50;
+    }
+    p {
+      font-size: 24px;
+      color: #aaa;
+    }
+    svg {
+      background-color: #1c1c1c;
+      display: block;
+      margin: 20px auto;
+      border-radius: 8px;
+    }
+    footer {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      text-align: center;
+      font-size: 25px;
+      color: #ddd;
+      padding: 10px;
+      backdrop-filter: blur(5px);
+    }
+    .cool-link {
+      color: #4caf50;
+    }
+    .tooltip {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 14px;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>40.9B tons</h2>
+  <p>Global CO2 emission for 2023</p>
+
+  <svg id="myPlot" width="800" height="800"></svg>
+  <div id="tooltip" class="tooltip"></div>
+
+  <footer>
+    <h3>243.9M tons of which are produced in United Arab Emirates</h3>
+    <p>Data Visualization by Mia Than | Source:
+      <a href="https://earthobservatory.nasa.gov/images/152519/emissions-from-fossil-fuels-continue-to-rise" target="_blank" class="cool-link">Earth Observatory</a>
+    </p>
+  </footer>
+
+  <script>
+    // Set Dimensions
+    const width = 800, height = 800;
+    const centerX = width / 2, centerY = height / 2;
+    const radius = 350;
+
+    // Total Dots
+    const totalDots = 500;
+    const greenDots = Math.round((243.9 / 40900) * totalDots);
+    const grayDots = totalDots - greenDots;
+
+    // Generate Random Points Centered
+    const data = Array.from({ length: totalDots }, (_, i) => {
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * radius;
+      return {
+        x: centerX + Math.cos(angle) * distance,
+        y: centerY + Math.sin(angle) * distance,
+        color: i < greenDots ? "limegreen" : "gray",
+        originalY: centerY + Math.sin(angle) * distance
+      };
+    });
+
+    // Select SVG
+    const svg = d3.select("#myPlot");
+
+    // Draw Dots with Animation
+    const circles = svg.selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", d => d.x)
+      .attr("cy", centerY)
+      .attr("r", 4)
+      .style("fill", d => d.color)
+      .style("opacity", 0)
+      .transition()
+      .duration(5000)
+      .delay((d, i) => i * 5)
+      .style("opacity", 0.8)
+      .attr("cy", d => d.y);
+
+    // Tooltip Interactivity
+    const tooltip = d3.select("#tooltip");
+
+    svg.selectAll("circle")
+      .on("mouseover", function(event, d) {
+        tooltip.style("visibility", "visible")
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 20}px`)
+          .text(d.color === "limegreen" ? "Emissions in UAE" : "Global Emissions");
+
+        d3.select(this)
+          .transition()
+          .duration(300)
+          .attr("r", 7)
+          .style("opacity", 1);
+      })
+      .on("mousemove", function(event) {
+        tooltip.style("left", `${event.pageX + 10}px`)
+               .style("top", `${event.pageY - 20}px`);
+      })
+      .on("mouseout", function() {
+        tooltip.style("visibility", "hidden");
+        d3.select(this)
+          .transition()
+          .duration(300)
+          .attr("r", 4)
+          .style("opacity", 0.8);
+      });
+  </script>
+
+</body>
+</html>
