@@ -117,31 +117,31 @@
     // Tooltip Interactivity
     const tooltip = d3.select("#tooltip");
 
-    svg.selectAll("circle")
-      .on("mouseover", function(event, d) {
-        tooltip.style("visibility", "visible")
-          .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY - 20}px`)
-          .text(d.color === "limegreen" ? "Emissions in UAE" : "Global Emissions");
+svg.selectAll("circle")
+  .on("mouseover", function(d) {
+    tooltip.style("visibility", "visible")
+      .style("left", (d3.event.pageX + 10) + "px")
+      .style("top", (d3.event.pageY - 20) + "px")
+      .text(d.color === "limegreen" ? "Emissions in UAE" : "Global Emissions");
 
-        d3.select(this)
-          .transition()
-          .duration(300)
-          .attr("r", 7)
-          .style("opacity", 1);
-      })
-      .on("mousemove", function(event) {
-        tooltip.style("left", `${event.pageX + 10}px`)
-               .style("top", `${event.pageY - 20}px`);
-      })
-      .on("mouseout", function() {
-        tooltip.style("visibility", "hidden");
-        d3.select(this)
-          .transition()
-          .duration(300)
-          .attr("r", 4)
-          .style("opacity", 0.8);
-      });
+    d3.select(this)
+      .transition()
+      .duration(300)
+      .attr("r", 7)
+      .style("opacity", 1);
+  })
+  .on("mousemove", function() {
+    tooltip.style("left", (d3.event.pageX + 10) + "px")
+           .style("top", (d3.event.pageY - 20) + "px");
+  })
+  .on("mouseout", function() {
+    tooltip.style("visibility", "hidden");
+    d3.select(this)
+      .transition()
+      .duration(300)
+      .attr("r", 4)
+      .style("opacity", 0.8);
+  });
   </script>
 
 </body>
